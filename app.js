@@ -1,235 +1,152 @@
+//* ======================================================
+//*                     IOS CALCULATOR
+//* ======================================================
 
-const display1 = document.querySelector('.previous-display')
-const display2 = document.querySelector('.current-display')
-const equal = document.querySelector('.equal')
-
-
-const eins = document.querySelector('.number-1')
-const zwei = document.querySelector('.number-2')
-const drei = document.querySelector('.number-3')
-const vier = document.querySelector('.number-4')
-const funf = document.querySelector('.number-5')
-const sex = document.querySelector('.number-6')
-const sieben = document.querySelector('.number-7')
-const acht = document.querySelector('.number-8')
-const neun = document.querySelector('.number-9')
-const zero = document.querySelector('.number-0')
-const addition = document.querySelector('.addition')
-const subtraction= document.querySelector('.subtraction')
-const multiplication= document.querySelector('.multiplication')
-const division= document.querySelector('.division')
-const percent=document.querySelector('.percent')
-const ac= document.querySelector('.ac')
-const decimal= document.querySelector('.decimal')
-const pm=document.querySelector('.pm')
+const numberButtons=  document.querySelectorAll(".num")
+const operationButtons=  document.querySelectorAll(".operator")
+const equalButtons=  document.querySelector(".equal")
+const acButtons=  document.querySelector(".ac")
+const pmButtons=  document.querySelector(".pm")
+const percentButtons=  document.querySelector(".percent")
+const üstEkran = document.querySelector(".previous-display");
+const altEkran = document.querySelector(".current-display");
 
 
-let array1=[];
-let array2=[];
-let operator;
+//?operator değişkenleri
+
+let üstEkranYazi="";
+let altEkranYazi="";
+let işlem="";
+
+//?eşittir yada percent e basıldıktan sonra yeni işleme yeni sayılar girmek için, tıklandı tıklanmadı boolean değişkeni hazırladık, eşittir (ve de percent) butonunda bu true yani tıklandı olacak
+let esittirVeyaPercentPressed=false;
+
+numberButtons.forEach((number)=>{
+number.onclick=()=>{
+ekranaHazirlik(number.textContent)
+updateEkran();
+}
+})
+const ekranaHazirlik=(num)=>{
+
+//?kullanıcı 0 girerse, sonrasında 0 ve . dışında bir sayı girerse, ekranda girilen yeni sayı gözüksün
+
+if(altEkranYazi=="0" && num !=="0" && num !==".")
+{
+ altEkranYazi=num
+ return;
+}
+//?kullanıcı herhangi bir yerde . girmişken, tekrar nokta girmeye kalkarsa giremesin
+if (num === "." && altEkranYazi.includes(".")) return;
+
+//?kullanıcı 10 haneden sonra girmesin
+if(altEkranYazi.length>9)
+return;
+
+//?kullanıcı ilk başta 0 girer ardından tekrar 0 girerse, girilmesin, tek 0 döndürsün
+if(altEkranYazi==="0" && num ==="0")
+return;
+
+//?eşittir yada percent a basıldıktan sonra girilen number tek başına ekranda görünsün,çünkü yeni işlem başlıyor
+if (esittirVeyaPercentPressed) {
+ esittirVeyaPercentPressed=false
+  altEkranYazi = num;
+  return
+}
+//?bütün şartları başarı ile geçtiyse basılan numaraları arka arkaya ekle
+altEkranYazi+=num
+}
+
+//?BURADA YAPILANLARI EKRANA BASTIRMA
+const updateEkran=()=>{
+
+ if(altEkranYazi.toString().length>9)
+
+ {altEkranYazi= altEkranYazi.toString().slice(0,9)}
+
+
+
+altEkran.textContent=altEkranYazi;
+
+//?işlem girilince 
+if(işlem!=null){
+üstEkran.textContent= `${üstEkranYazi}  ${işlem}`
+}
+else{
+ üstEkran.textContent="";
+}
+}
+
+//?herhangi bir işleme tıklandığında
+operationButtons.forEach((op)=>{
+op.onclick=()=>{
+
+  if(altEkranYazi==="") return
+  //?eşittire basılmadan arka arkaya işleme basılırsa (alt ve üst ekran doluyken işleme basılmaya devam edilirse)
+  if (altEkranYazi && üstEkranYazi) hesapla();
+
+  işlem = op.textContent;
+  üstEkranYazi = altEkranYazi;
+  altEkranYazi = "";
+
+  updateEkran();
+}
+
+})
+
+//?eşittir butonuna tıklandığında
+equalButtons.onclick = () => {
+  hesapla();
+  updateEkran();
+  esittirVeyaPercentPressed=true;
+};
+
+const hesapla=()=>{
 let sonuc;
-
-eins.onclick=()=>{
-    array1.push(1);
-    display2.innerHTML=array1.join('');
+switch (işlem) {
+  case "+":
+    sonuc = +üstEkranYazi + Number(altEkranYazi);
+    break;
+  case "-":
+    sonuc = üstEkranYazi - altEkranYazi;
+    break;
+  case "x":
+    sonuc = üstEkranYazi * altEkranYazi;
+    break;
+  case "÷":
+    sonuc = üstEkranYazi / altEkranYazi;
+    break;
+  default:
+    return;
 }
-zwei.onclick=()=>{
-    array1.push(2);
-    display2.innerHTML=array1.join('');
-}
+altEkranYazi=sonuc;
 
-drei.onclick=()=>{
-    array1.push(3);
-    display2.innerHTML=array1.join('');
-}
-
-vier.onclick=()=>{
-    array1.push(4);
-    display2.innerHTML=array1.join('');
-}
-
-funf.onclick=()=>{
-    array1.push(5);
-    display2.innerHTML=array1.join('');
-}
-
-sex.onclick=()=>{
-    array1.push(6);
-    display2.innerHTML=array1.join('');
-}
-
-sieben.onclick=()=>{
-    array1.push(7);
-    display2.innerHTML=array1.join('');
-}
-
-acht.onclick=()=>{
-    array1.push(8);
-    display2.innerHTML=array1.join('');
-}
-
-neun.onclick=()=>{
-    array1.push(9);
-    display2.innerHTML=array1.join('');
-}
-
-zero.onclick=()=>{
-    array1.push(0);
-    display2.innerHTML=array1.join('');
-}
-
-
-addition.onclick=()=>{
-    
-    array2=[];
-    array2=array1;
-
-    display1.innerHTML=array2.join('');
-    
-    
-    array1=[];
-    
-    operator='+';
-    display1.innerHTML=display1.innerHTML+operator
-    // display1.innerHTML=array2.join('')+''+operator;
-}
-
-subtraction.onclick=()=>{
-    array2=[];
-    array2=array1;
-
-    display1.innerHTML=array2.join('');
-    
-    
-    array1=[];
-    operator='-';
-    display1.innerHTML=array2.join('')+''+operator;
-}
-multiplication.onclick=()=>{
-    array2=[];
-    array2=array1;
-
-    display1.innerHTML=array2.join('');
-    
-    
-    array1=[];
-    operator='*';
-    display1.innerHTML=array2.join('')+''+operator;
-}
-division.onclick=()=>{
-    array2=[];
-    array2=array1;
-
-    display1.innerHTML=array2.join('');
-    
-    
-    array1=[];
-    operator='/';
-    display1.innerHTML=array2.join('')+''+operator;
-}
-
-decimal.onclick=()=>{
-    array1.push('.');
-    display2.innerHTML=array1.join('')
-}
-
-
-
-percent.onclick=()=>{
-    let b= Number(array1.join(''));
-    let c= Number(array2.join(''))
-
-    b=b*c/100
-    array1=[];
-    array1.push(b);
-
-    console.log(b);
+üstEkranYazi="";
+işlem="";
 
 }
+//?AC butonuna basıldığında
+acButtons.addEventListener("click",()=>{
+
+işlem="";
+altEkranYazi="";
+üstEkranYazi="";
+updateEkran()
+
+})
 
 
-equal.onclick=()=>{
-    switch(operator){
-    case '+':
-        sonuc= Number(array2.join('')) + Number(array1.join(''));
-        display1.innerHTML=Number(array2.join('')) + '+' +  Number(array1.join(''));
-        array1=[];
-        array1.push(sonuc);
-        display2.innerHTML=sonuc; break;
-    case '-':
-      sonuc= Number(array2.join('')) - Number(array1.join(''));
-      display1.innerHTML=Number(array2.join('')) + '-' +  Number(array1.join(''));
-      array1=[];
-      array1.push(sonuc);
-      display2.innerHTML=sonuc; break;
-    case '*':
-    sonuc= Number(array2.join('')) * Number(array1.join(''));
-    display1.innerHTML=Number(array2.join('')) + '*' +  Number(array1.join(''));
-      array1=[];
-      array1.push(sonuc);
-    display2.innerHTML=sonuc; break;
-    case '/':
-        if(array1!=0){
-            sonuc=Number(array2.join('')) / Number(array1.join(''));
-        }
-        else{
-            sonuc='error'
-        }
+pmButtons.onclick=()=>{
+if(!altEkranYazi) return
 
-    display1.innerHTML=Number(array2.join('')) + '/' +  Number(array1.join(''));
-      array1=[];
-      array1.push(sonuc);
-    display2.innerHTML=sonuc;break;
-    }
+  altEkranYazi= altEkranYazi*-1
+  updateEkran()
 }
 
-nokta = true
-decimal.onclick = () => {
-
-
-    if (array1.includes('.')) {
-        nokta == false;
-    } else {
-        nokta == true;
-        array1.push('.');
-        sonuc = array1.join('')
-        console.log(sonuc);
-        display2.innerHTML = sonuc
-    }
-}
-
-pm.onclick=()=>{
-    let a=Number(array1.join(''));
-    a=a*(-1);
-    
-    array1=[];
-    array1.push(a);
-    display2.innerHTML=Number(array1.join(''));
-    
-    console.log(a);
-    console.log(array1);
-}
-
-
-
-ac.onclick=()=>{
-    display2.innerHTML= 0;
-    display1.innerHTML= 0;
-    array1=[];
-    array2=[];
-    
-}
-
-percent.onclick=()=>{
-    let b= Number(array1.join(''));
-    let c= Number(array2.join(''))
-
-    b=b*c/100
-    array1=[];
-    array1.push(b);
-    display2.innerHTML=Number(array1.join(''));
-    console.log(b);
+percentButtons.onclick=()=>{
+if (!altEkranYazi) return;
+altEkranYazi= altEkranYazi/100;
+updateEkran()
+esittirVeyaPercentPressed=true
 
 }
-
-
